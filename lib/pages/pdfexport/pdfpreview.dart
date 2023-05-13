@@ -31,54 +31,57 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(actions: [
-        IconButton(onPressed: () => incW(-10), icon: Icon(Icons.remove)),
-        Slider(
-          inactiveColor: Colors.grey,
-          value: w,
-          max: 100,
-          min: 50,
-          onChanged: (value) {
-            setState(() {
-              w = value;
-            });
-          },
-        ),
-        IconButton(onPressed: () => incW(10), icon: Icon(Icons.add)),
-        IconButton(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          icon: const Icon(Icons.save),
-          onPressed: () async {
-            try {
-              final da = await makePdf(widget.invoice);
-              final filePath = await FilePicker.platform.getDirectoryPath();
-              File a = File('');
-              if (filePath != null) {
-                final t = DateTime.now();
-                final file = File(
-                    '$filePath/test_${t.hour.toString()}.${t.minute.toString()}_${t.day.toString()}.${t.month.toString()}.pdf');
-                a = await file.writeAsBytes(da);
-              }
-              if (a.existsSync()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Theme.of(context).colorScheme.background,
-                    duration: Duration(milliseconds: 1000),
-                    content: Center(
-                        child: Text(
-                      "Сохранено",
-                      style: TextStyle(color: Theme.of(context).hintColor),
-                    )),
-                  ),
-                );
-              }
-            } catch (ex) {}
-          },
-        ),
-      ]),
-      body: Platform.isWindows
-          ? Center(
+    return Platform.isWindows
+        ? Scaffold(
+            appBar: AppBar(actions: [
+              IconButton(onPressed: () => incW(-10), icon: Icon(Icons.remove)),
+              Slider(
+                inactiveColor: Colors.grey,
+                value: w,
+                max: 100,
+                min: 50,
+                onChanged: (value) {
+                  setState(() {
+                    w = value;
+                  });
+                },
+              ),
+              IconButton(onPressed: () => incW(10), icon: Icon(Icons.add)),
+              IconButton(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                icon: const Icon(Icons.save),
+                onPressed: () async {
+                  try {
+                    final da = await makePdf(widget.invoice);
+                    final filePath =
+                        await FilePicker.platform.getDirectoryPath();
+                    File a = File('');
+                    if (filePath != null) {
+                      final t = DateTime.now();
+                      final file = File(
+                          '$filePath/test_${t.hour.toString()}.${t.minute.toString()}_${t.day.toString()}.${t.month.toString()}.pdf');
+                      a = await file.writeAsBytes(da);
+                    }
+                    if (a.existsSync()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
+                          duration: Duration(milliseconds: 1000),
+                          content: Center(
+                              child: Text(
+                            "Сохранено",
+                            style:
+                                TextStyle(color: Theme.of(context).hintColor),
+                          )),
+                        ),
+                      );
+                    }
+                  } catch (ex) {}
+                },
+              ),
+            ]),
+            body: Center(
               child: Container(
                 width: w * MediaQuery.of(context).size.width / 100,
                 child: PdfPreview(
@@ -91,27 +94,28 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
                 ),
               ),
             )
-          : PinchPage(
+            // body: Platform.isWindows
+            //     ? PdfView(
+            //         controller: PdfController(
+            //             document: PdfDocument.openData(makePdf(invoice))),
+            //       )
+            //     : PdfViewPinch(
+            //         controller: PdfControllerPinch(
+            //             document: PdfDocument.openData(makePdf(invoice))),
+            //       ),
+
+            // body: Platform.isWindows
+            //     ? SimplePage(
+            //         invoice: invoice,
+            //       )
+            //     : PinchPage(
+            //         invoice: invoice,
+            //       ),
+            )
+        : Scaffold(
+            body: PinchPage(
               invoice: widget.invoice,
             ),
-
-      // body: Platform.isWindows
-      //     ? PdfView(
-      //         controller: PdfController(
-      //             document: PdfDocument.openData(makePdf(invoice))),
-      //       )
-      //     : PdfViewPinch(
-      //         controller: PdfControllerPinch(
-      //             document: PdfDocument.openData(makePdf(invoice))),
-      //       ),
-
-      // body: Platform.isWindows
-      //     ? SimplePage(
-      //         invoice: invoice,
-      //       )
-      //     : PinchPage(
-      //         invoice: invoice,
-      //       ),
-    );
+          );
   }
 }
